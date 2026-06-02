@@ -109,3 +109,6 @@ EventHub is a web-based platform that allows students and staff to discover, reg
 cd backend
 npm install
 npm run dev
+cd frontend
+npm install
+npm start
