@@ -43,10 +43,6 @@ EventHub is a web-based platform that allows students and staff to discover, reg
 ### Database
 - PostgreSQL (hosted on Neon)
 
-### Deployment
-- Render (Backend)
-- Vercel (Frontend)
-
 ---
 
 ## 📂 Database Schema
@@ -84,20 +80,6 @@ EventHub is a web-based platform that allows students and staff to discover, reg
 
 ---
 
-## 🚀 Live Demo
-
-- **Frontend:** [https://event-app-frontend.vercel.app](https://event-app-frontend.vercel.app)
-- **Backend:** [https://event-app-backend.onrender.com](https://event-app-backend.onrender.com)
-
-### Test Credentials
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@example.com | admin123 |
-| User | user@example.com | user123 |
-
----
-
 ## 📖 How to Run Locally
 
 ### Prerequisites
@@ -109,6 +91,7 @@ EventHub is a web-based platform that allows students and staff to discover, reg
 cd backend
 npm install
 npm run dev
+### Frontend Setup
 cd frontend
 npm install
 npm start
