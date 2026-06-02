@@ -1,0 +1,6 @@
+[submodule "EVENT APP BACKEND"]
+	path = EVENT APP BACKEND
+	url = https://github.com/YOUR_USERNAME/EVENT-APP-BACKEND.git
+[submodule "event-app-frontend"]
+	path = event-app-frontend
+	url = https://github.com/YOUR_USERNAME/event-app-frontend.git
