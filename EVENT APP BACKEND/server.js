@@ -4,7 +4,10 @@ const dotenv = require('dotenv');
 const pool = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const eventRoutes = require('./routes/eventRoutes');
-const registrationRoutes = require('./routes/registrationRoutes'); // Add this line
+const registrationRoutes = require('./routes/registrationRoutes');
+const waitlistRoutes = require('./routes/waitlistRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
+const commentRoutes = require('./routes/commentRoutes');
 
 dotenv.config();
 
@@ -31,7 +34,10 @@ app.get('/test-db', async (req, res) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
-app.use('/api/registrations', registrationRoutes); // Add this line
+app.use('/api/registrations', registrationRoutes);
+app.use('/api/waitlist', waitlistRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/comments', commentRoutes);
 
 // Root route
 app.get('/', (req, res) => {

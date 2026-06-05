@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home';
 import MyEvents from './pages/MyEvents';
 import AdminDashboard from './pages/AdminDashboard';
+import CalendarView from './pages/CalendarView';
+import AnalyticsDashboard from './pages/AnalyticsDashboard';
+import Gallery from './pages/Gallery';
 import './App.css';
 
 function App() {
@@ -12,6 +15,8 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [selectedRole, setSelectedRole] = useState('user');
+  const [adminSecret, setAdminSecret] = useState('');
 
   useEffect(() => {
     checkUserLoggedIn();
@@ -50,12 +55,18 @@ function App() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    const role = e.target.querySelector('input[name="role"]:checked').value;
+    
     try {
       const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password, role })
+        body: JSON.stringify({ 
+          username, 
+          email, 
+          password, 
+          role: selectedRole,
+          adminSecret: selectedRole === 'admin' ? adminSecret : undefined
+        })
       });
       const data = await response.json();
       if (response.ok) {
@@ -80,22 +91,27 @@ function App() {
     <Router>
       <div className="App">
         <header className="header">
-          <h1>📅 <span>Event</span>Hub</h1>
+          <h1>EventHub</h1>
           <div className="header-actions">
-            <nav style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <nav>
               <Link to="/" className="btn btn-primary">Home</Link>
-              {user && (
+              <Link to="/calendar" className="btn btn-primary">📅 Calendar</Link>
+              <Link to="/gallery" className="btn btn-primary">🖼️ Gallery</Link>
+              {user && user.role === 'user' && (
+                <Link to="/my-events" className="btn btn-primary">My Events</Link>
+              )}
+              {user && user.role === 'admin' && (
                 <>
-                  <Link to="/my-events" className="btn btn-primary">My Events</Link>
-                  {user.role === 'admin' && (
-                    <Link to="/admin" className="btn btn-primary">Admin</Link>
-                  )}
+                  <Link to="/admin" className="btn btn-primary">Admin</Link>
+                  <Link to="/analytics" className="btn btn-primary">📊 Analytics</Link>
                 </>
               )}
             </nav>
             {user ? (
               <>
-                <span className="user-info">👋 {user.username} ({user.role})</span>
+                <span className="user-info">
+                  👋 {user.username} <span className="role-badge">{user.role}</span>
+                </span>
                 <button className="btn btn-logout" onClick={handleLogout}>Logout</button>
               </>
             ) : (
@@ -109,8 +125,11 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/calendar" element={<CalendarView />} />
+          <Route path="/gallery" element={<Gallery />} />
           <Route path="/my-events" element={<MyEvents />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/analytics" element={<AnalyticsDashboard />} />
         </Routes>
 
         {showLogin && (
@@ -137,10 +156,39 @@ function App() {
                 <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
                 <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                
                 <div className="radio-group">
-                  <label><input type="radio" name="role" value="user" defaultChecked /> User</label>
-                  <label><input type="radio" name="role" value="admin" /> Admin</label>
+                  <label>
+                    <input 
+                      type="radio" 
+                      name="role" 
+                      value="user" 
+                      checked={selectedRole === 'user'} 
+                      onChange={() => setSelectedRole('user')} 
+                    /> User
+                  </label>
+                  <label>
+                    <input 
+                      type="radio" 
+                      name="role" 
+                      value="admin" 
+                      checked={selectedRole === 'admin'} 
+                      onChange={() => setSelectedRole('admin')} 
+                    /> Admin
+                  </label>
                 </div>
+
+                {selectedRole === 'admin' && (
+                  <input 
+                    type="text" 
+                    placeholder="Enter Admin Secret Key" 
+                    value={adminSecret} 
+                    onChange={(e) => setAdminSecret(e.target.value)} 
+                    required 
+                    style={{ marginTop: '10px' }}
+                  />
+                )}
+
                 <div className="modal-actions">
                   <button type="submit" className="btn btn-success">Register</button>
                   <button type="button" className="btn btn-outline" onClick={() => setShowRegister(false)}>Cancel</button>
@@ -149,6 +197,11 @@ function App() {
             </div>
           </div>
         )}
+
+        <footer className="zuct-footer">
+          <p>🏛️ <strong>Zambia University College of Technology</strong> — Event Management System</p>
+          <p style={{ fontSize: '12px', marginTop: '5px' }}>© 2026 ZUCT | All rights reserved</p>
+        </footer>
       </div>
     </Router>
   );

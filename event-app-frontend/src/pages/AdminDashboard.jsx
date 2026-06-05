@@ -7,6 +7,8 @@ function AdminDashboard() {
   const [eventDate, setEventDate] = useState('');
   const [eventTime, setEventTime] = useState('');
   const [eventLocation, setEventLocation] = useState('');
+  const [eventCategory, setEventCategory] = useState('General');
+  const [eventCapacity, setEventCapacity] = useState('');
   const [eventImage, setEventImage] = useState(null);
 
   const handleCreateEvent = async (e) => {
@@ -19,6 +21,8 @@ function AdminDashboard() {
       formData.append('date', eventDate);
       formData.append('time', eventTime);
       formData.append('location', eventLocation);
+      formData.append('category', eventCategory);
+      formData.append('capacity', eventCapacity || 0);
       if (eventImage) {
         formData.append('eventImage', eventImage);
       }
@@ -50,6 +54,8 @@ function AdminDashboard() {
     setEventDate('');
     setEventTime('');
     setEventLocation('');
+    setEventCategory('General');
+    setEventCapacity('');
     setEventImage(null);
   };
 
@@ -100,6 +106,43 @@ function AdminDashboard() {
               value={eventLocation} 
               onChange={(e) => setEventLocation(e.target.value)} 
               required 
+            />
+            <select
+              value={eventCategory}
+              onChange={(e) => setEventCategory(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px 15px',
+                marginBottom: '15px',
+                border: '2px solid #e2e8f0',
+                borderRadius: '8px',
+                fontSize: '14px',
+                background: 'rgba(255,255,255,0.05)',
+                color: 'white'
+              }}
+            >
+              <option value="General">General</option>
+              <option value="Seminar">Seminar</option>
+              <option value="Workshop">Workshop</option>
+              <option value="Sports">Sports</option>
+              <option value="Social">Social</option>
+              <option value="Academic">Academic</option>
+            </select>
+            <input 
+              type="number" 
+              placeholder="Capacity (max attendees)" 
+              value={eventCapacity} 
+              onChange={(e) => setEventCapacity(e.target.value)} 
+              style={{
+                width: '100%',
+                padding: '12px 15px',
+                marginBottom: '15px',
+                border: '2px solid #e2e8f0',
+                borderRadius: '8px',
+                fontSize: '14px',
+                background: 'rgba(255,255,255,0.05)',
+                color: 'white'
+              }}
             />
             <input 
               type="file" 

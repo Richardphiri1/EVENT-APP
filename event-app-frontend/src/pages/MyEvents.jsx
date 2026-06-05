@@ -3,6 +3,10 @@ import React, { useState, useEffect } from 'react';
 function MyEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackEventId, setFeedbackEventId] = useState(null);
+  const [feedbackRating, setFeedbackRating] = useState(5);
+  const [feedbackComment, setFeedbackComment] = useState('');
 
   useEffect(() => {
     fetchMyEvents();
@@ -52,6 +56,43 @@ function MyEvents() {
     }
   };
 
+  const handleFeedbackSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          eventId: feedbackEventId,
+          rating: feedbackRating,
+          comment: feedbackComment
+        })
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        alert(data.error || 'Failed to submit feedback');
+        return;
+      }
+
+      alert('✅ Feedback submitted successfully!');
+      setShowFeedbackModal(false);
+      setFeedbackComment('');
+      setFeedbackRating(5);
+    } catch (error) {
+      alert('Error submitting feedback: ' + error.message);
+    }
+  };
+
+  const openFeedbackModal = (eventId) => {
+    setFeedbackEventId(eventId);
+    setShowFeedbackModal(true);
+  };
+
   if (loading) {
     return (
       <div className="loading">
@@ -91,7 +132,7 @@ function MyEvents() {
                 <div style={{ 
                   marginTop: '10px', 
                   padding: '8px', 
-                  background: '#f0f0f0', 
+                  background: 'rgba(255,255,255,0.04)', 
                   borderRadius: '8px',
                   display: 'flex',
                   alignItems: 'center',
@@ -106,12 +147,64 @@ function MyEvents() {
                   >
                     ❌ Unregister
                   </button>
+                  <button 
+                    className="btn btn-success" 
+                    onClick={() => openFeedbackModal(event.id)}
+                  >
+                    ⭐ Rate Event
+                  </button>
                 </div>
               </div>
             </div>
           ))
         )}
       </div>
+
+      {/* Feedback Modal */}
+      {showFeedbackModal && (
+        <div className="modal-overlay" onClick={() => setShowFeedbackModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>⭐ Rate this event</h2>
+            <form onSubmit={handleFeedbackSubmit}>
+              <div style={{ marginBottom: '16px', textAlign: 'center' }}>
+                <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '8px' }}>How was the event?</p>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                  {[1, 2, 3, 4, 5].map(num => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => setFeedbackRating(num)}
+                      style={{
+                        background: feedbackRating >= num ? '#c8a84e' : 'rgba(255,255,255,0.05)',
+                        border: 'none',
+                        borderRadius: '8px',
+                        width: '48px',
+                        height: '48px',
+                        fontSize: '24px',
+                        cursor: 'pointer',
+                        color: feedbackRating >= num ? '#0a1628' : 'rgba(255,255,255,0.3)',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      ⭐
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <textarea
+                placeholder="Write your feedback..."
+                value={feedbackComment}
+                onChange={(e) => setFeedbackComment(e.target.value)}
+                required
+              />
+              <div className="modal-actions">
+                <button type="submit" className="btn btn-success">Submit Feedback</button>
+                <button type="button" className="btn btn-outline" onClick={() => setShowFeedbackModal(false)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

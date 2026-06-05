@@ -5,10 +5,18 @@ const pool = require('../config/db');
 // Register a new user
 const register = async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
+    const { username, email, password, role, adminSecret } = req.body;
 
-    // Default role to 'user' if not provided
-    const userRole = role || 'user';
+    // Determine the user's role
+    let userRole = 'user';
+    
+    // If they want to be an admin, they must provide the secret key
+    if (role === 'admin') {
+      if (adminSecret !== process.env.ADMIN_SECRET) {
+        return res.status(403).json({ error: 'Invalid admin secret key' });
+      }
+      userRole = 'admin';
+    }
 
     // Check if user already exists
     const userExist = await pool.query(

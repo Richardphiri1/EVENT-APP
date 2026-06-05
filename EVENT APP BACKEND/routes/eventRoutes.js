@@ -6,6 +6,7 @@ const upload = require('../middleware/uploadMiddleware');
 
 // Public routes
 router.get('/', eventController.getAllEvents);
+router.get('/past', eventController.getPastEvents);
 router.get('/:id', eventController.getEventById);
 
 // Protected routes (admin only)
